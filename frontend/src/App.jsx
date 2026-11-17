@@ -1,122 +1,164 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import React, { useState, useCallback } from "react";
+import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
+import TerraMap from "./components/TerraMap";
+import MapControls from "./components/MapControls";
+import Legend from "./components/Legend";
+import Tooltip from "./components/Tooltip";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { FARM_CENTER } from "./data/farmData";
+import { BASEMAP_STYLES, SPECTRAL_BANDS } from "./data/constants";
+import "./App.css";
+
+export default function App() {
+  // 3D Camera View State
+  const [viewState, setViewState] = useState({
+    longitude: FARM_CENTER.longitude,
+    latitude: FARM_CENTER.latitude,
+    zoom: FARM_CENTER.zoom,
+    pitch: FARM_CENTER.pitch,
+    bearing: FARM_CENTER.bearing,
+    maxPitch: 85,
+    minZoom: 9,
+    maxZoom: 20
+  });
+
+  const [is3D, setIs3D] = useState(true);
+
+  // Active Map Configuration
+  const [activeBasemap, setActiveBasemap] = useState(BASEMAP_STYLES[0]);
+  const [activeBand, setActiveBand] = useState(SPECTRAL_BANDS[0]);
+  const [mapboxToken, setMapboxToken] = useState("");
+
+  // GIS Layer Toggles
+  const [layerVisibility, setLayerVisibility] = useState({
+    farmBoundary: true,
+    sectors: true,
+    blightZone: true,
+    pixelGrid: true,
+    elevation3D: true,
+    irrigation: true,
+    sensors: true,
+    labels: true
+  });
+
+  // Hover Tooltip State
+  const [hoverInfo, setHoverInfo] = useState(null);
+
+  // Fly Camera to 5-Acre Blight Hotspot
+  const handleFocusBlight = useCallback(() => {
+    setViewState(prev => ({
+      ...prev,
+      longitude: -121.6042,
+      latitude: 36.6662,
+      zoom: 16.4,
+      pitch: 58,
+      bearing: -35,
+      transitionDuration: 1800
+    }));
+    // Ensure critical layers are on
+    setLayerVisibility(prev => ({
+      ...prev,
+      blightZone: true,
+      pixelGrid: true,
+      elevation3D: true
+    }));
+  }, []);
+
+  // Reset to 1,000-Acre Overview
+  const handleResetView = useCallback(() => {
+    setViewState(prev => ({
+      ...prev,
+      longitude: FARM_CENTER.longitude,
+      latitude: FARM_CENTER.latitude,
+      zoom: FARM_CENTER.zoom,
+      pitch: FARM_CENTER.pitch,
+      bearing: FARM_CENTER.bearing,
+      transitionDuration: 1400
+    }));
+  }, []);
+
+  // Focus on individual agricultural sectors
+  const handleFocusSector = useCallback((sectorKey) => {
+    const coords = {
+      A: { lon: -121.6040, lat: 36.6650, zoom: 15.2, pitch: 45, bearing: -20 },
+      B: { lon: -121.6160, lat: 36.6650, zoom: 15.2, pitch: 45, bearing: -20 },
+      C: { lon: -121.6160, lat: 36.6550, zoom: 15.2, pitch: 45, bearing: -20 },
+      D: { lon: -121.6040, lat: 36.6550, zoom: 15.2, pitch: 45, bearing: -20 }
+    }[sectorKey];
+
+    if (coords) {
+      setViewState(prev => ({
+        ...prev,
+        longitude: coords.lon,
+        latitude: coords.lat,
+        zoom: coords.zoom,
+        pitch: coords.pitch,
+        bearing: coords.bearing,
+        transitionDuration: 1400
+      }));
+    }
+  }, []);
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="terra-app">
+      {/* Top Navigation & Telemetry HUD */}
+      <Header
+        onFocusBlight={handleFocusBlight}
+        onResetView={handleResetView}
+        mapboxToken={mapboxToken}
+        setMapboxToken={setMapboxToken}
+      />
 
-      <div className="ticks"></div>
+      {/* Main Workspace */}
+      <main className="terra-workspace">
+        {/* Interactive GIS Sidebar */}
+        <Sidebar
+          layerVisibility={layerVisibility}
+          setLayerVisibility={setLayerVisibility}
+          activeBasemap={activeBasemap}
+          setActiveBasemap={setActiveBasemap}
+          activeBand={activeBand}
+          setActiveBand={setActiveBand}
+          onFocusBlight={handleFocusBlight}
+          onFocusSector={handleFocusSector}
+        />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* 3D Map Viewport (Deck.gl + Mapbox) */}
+        <div className="map-stage">
+          <TerraMap
+            viewState={viewState}
+            setViewState={setViewState}
+            layerVisibility={layerVisibility}
+            activeBasemap={activeBasemap}
+            activeBand={activeBand}
+            mapboxToken={mapboxToken}
+            hoverInfo={hoverInfo}
+            setHoverInfo={setHoverInfo}
+            is3D={is3D}
+          />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          {/* On-Map HUD Controls */}
+          <MapControls
+            viewState={viewState}
+            setViewState={setViewState}
+            onResetView={handleResetView}
+            onFocusBlight={handleFocusBlight}
+            is3D={is3D}
+            setIs3D={setIs3D}
+          />
+
+          {/* Cartographic Legend */}
+          <Legend
+            showBlightZone={layerVisibility.blightZone}
+            showGrid={layerVisibility.pixelGrid}
+            activeBand={activeBand}
+          />
+
+          {/* Interactive Inspection Tooltip */}
+          <Tooltip info={hoverInfo} />
+        </div>
+      </main>
+    </div>
+  );
 }
-
-export default App

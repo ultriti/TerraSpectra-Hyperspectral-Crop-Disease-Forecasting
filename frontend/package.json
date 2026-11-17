@@ -10,6 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@deck.gl/geo-layers": "^9.4.1",
+    "@deck.gl/layers": "^9.4.1",
+    "@deck.gl/react": "^9.4.1",
+    "deck.gl": "^9.4.1",
+    "lucide-react": "^1.74.0",
+    "mapbox-gl": "^3.35.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
