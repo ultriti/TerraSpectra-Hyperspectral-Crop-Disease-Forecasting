@@ -1,7 +1,23 @@
-import React, { useState } from "react";
-import { Satellite, ShieldAlert, Cpu, Layers, Sparkles, Key, Check } from "lucide-react";
+import { useState } from "react";
+import {
+  Satellite,
+  ShieldAlert,
+  Sparkles,
+  Key,
+  Check,
+  Cpu,
+  RefreshCw
+} from "lucide-react";
 
-export default function Header({ onFocusBlight, onResetView, mapboxToken, setMapboxToken }) {
+export default function Header({
+  onFocusBlight,
+  onResetView,
+  mapboxToken,
+  setMapboxToken,
+  backendStatus,
+  onCheckBackend,
+  onOpenAnalyzer
+}) {
   const [showTokenModal, setShowTokenModal] = useState(false);
   const [tempToken, setTempToken] = useState(mapboxToken || "");
 
@@ -32,6 +48,19 @@ export default function Header({ onFocusBlight, onResetView, mapboxToken, setMap
           <span className="live-indicator"></span>
           <span>NASA EO-1 HYPERION / SENTINEL-2 SYNC</span>
         </div>
+
+        {/* Backend API Live Status Pill */}
+        <div
+          className={`backend-pill ${backendStatus?.online ? "api-online" : "api-offline"}`}
+          onClick={onCheckBackend}
+          title={backendStatus?.online ? "FastAPI Server Running on Port 8000" : "Backend Offline - Click to Retry"}
+        >
+          <span className="api-dot"></span>
+          <span className="api-text">
+            {backendStatus?.online ? "FastAPI: Connected (Port 8000)" : "API: Standalone"}
+          </span>
+          <RefreshCw size={11} className="api-refresh-icon" />
+        </div>
       </div>
 
       <div className="header-center">
@@ -51,6 +80,16 @@ export default function Header({ onFocusBlight, onResetView, mapboxToken, setMap
       </div>
 
       <div className="header-right">
+        {/* Trigger for Backend AI Prediction */}
+        <button
+          className="header-ai-btn"
+          onClick={onOpenAnalyzer}
+          title="Run Deep Learning Disease Classification on Image"
+        >
+          <Cpu size={15} />
+          <span>Run Disease AI Model</span>
+        </button>
+
         <button
           className="header-token-btn"
           onClick={() => setShowTokenModal(true)}

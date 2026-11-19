@@ -1,6 +1,4 @@
-import React from "react";
-import { Plus, Minus, Compass, Box, MapPin, Eye, RotateCcw } from "lucide-react";
-import { FARM_CENTER } from "../data/farmData";
+import { Plus, Minus, Compass, Box, MapPin, RotateCcw } from "lucide-react";
 
 export default function MapControls({
   viewState,

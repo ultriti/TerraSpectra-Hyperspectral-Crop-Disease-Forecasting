@@ -1,0 +1,277 @@
+.homePage {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #123823 0%, #07140d 55%, #050b08 100%);
+  color: #f3f7f4;
+  padding: 24px;
+  font-family: "Georgia", serif;
+  margin-top: 5vw;
+}
+
+.homeShell {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.homeMain {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.heroSection,
+.infoRow,
+.bottomBanner {
+  background: rgba(14, 36, 22, 0.82);
+  border: 1px solid rgba(92, 170, 108, 0.16);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(14px);
+  border-radius: 24px;
+}
+
+.heroSection {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 24px;
+  padding: 36px;
+}
+
+.heroBadge,
+.sectionTag {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(52, 120, 74, 0.25);
+  border: 1px solid rgba(98, 196, 126, 0.22);
+  color: #d8f5dd;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.heroContent h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 4.2rem);
+  line-height: 1.1;
+  color: #f7faf7;
+  max-width: 14ch;
+}
+
+.heroText {
+  margin-top: 18px;
+  max-width: 65ch;
+  color: #c5d7ca;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.heroActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.primaryBtn,
+.secondaryBtn,
+.textLink,
+.bannerBtn {
+  text-decoration: none;
+  border-radius: 999px;
+  font-weight: 700;
+  transition: 0.25s ease;
+}
+
+.primaryBtn {
+  background: linear-gradient(90deg, #1db954, #22c55e);
+  color: white;
+  padding: 14px 20px;
+}
+
+.secondaryBtn {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f2f7f3;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 20px;
+}
+
+.primaryBtn:hover,
+.secondaryBtn:hover,
+.textLink:hover,
+.bannerBtn:hover {
+  transform: translateY(-2px);
+}
+
+.heroVisual {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.heroCard {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.heroStat {
+  display: block;
+  color: #7ee08f;
+  font-size: 13px;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.heroCard strong {
+  color: #f5f8f5;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.infoRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  align-items: center;
+}
+
+.infoRow.leftImage .infoImage {
+  order: 0;
+}
+
+.infoRow.leftImage .infoContent {
+  order: 1;
+}
+
+.infoRow.rightImage .infoContent {
+  order: 0;
+}
+
+.infoRow.rightImage .infoImage {
+  order: 1;
+}
+
+.infoImage img {
+  width: 100%;
+  height: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+
+.infoContent h2 {
+  margin: 0 0 14px 0;
+  font-size: 1.8rem;
+  color: #f7faf7;
+}
+
+.infoContent p {
+  color: #c5d7ca;
+  line-height: 1.8;
+  font-size: 1rem;
+  max-width: 60ch;
+}
+
+.textLink {
+  display: inline-flex;
+  margin-top: 18px;
+  color: #7ee08f;
+  font-size: 1rem;
+}
+
+.bottomBanner {
+  padding: 28px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.bottomBanner h2 {
+  margin: 0 0 10px 0;
+  color: #f7faf7;
+  font-size: 1.5rem;
+}
+
+.bottomBanner p {
+  margin: 0;
+  color: #c5d7ca;
+  line-height: 1.7;
+}
+
+.bannerLinks {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bannerBtn {
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f2f7f3;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 1024px) {
+  .heroSection,
+  .infoRow,
+  .bottomBanner {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .heroSection {
+    padding: 28px;
+  }
+
+  .bottomBanner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .infoRow.leftImage .infoImage,
+  .infoRow.leftImage .infoContent,
+  .infoRow.rightImage .infoContent,
+  .infoRow.rightImage .infoImage {
+    order: unset;
+  }
+}
+
+@media (max-width: 768px) {
+  .homePage {
+    padding: 16px;
+  }
+
+  .heroContent h1 {
+    font-size: 2rem;
+    max-width: none;
+  }
+
+  .infoContent h2 {
+    font-size: 1.5rem;
+  }
+
+  .heroSection,
+  .infoRow,
+  .bottomBanner {
+    padding: 20px;
+  }
+
+  .heroActions,
+  .bannerLinks {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .primaryBtn,
+  .secondaryBtn,
+  .bannerBtn {
+    width: 100%;
+    text-align: center;
+  }
+}

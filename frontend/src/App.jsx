@@ -1,13 +1,15 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import TerraMap from "./components/TerraMap";
 import MapControls from "./components/MapControls";
 import Legend from "./components/Legend";
 import Tooltip from "./components/Tooltip";
+import DiseaseAnalyzerModal from "./components/DiseaseAnalyzerModal";
 
 import { FARM_CENTER } from "./data/farmData";
 import { BASEMAP_STYLES, SPECTRAL_BANDS } from "./data/constants";
+import { checkBackendHealth, fetchFarmOverview } from "./services/api";
 import "./App.css";
 
 export default function App() {
@@ -44,6 +46,46 @@ export default function App() {
 
   // Hover Tooltip State
   const [hoverInfo, setHoverInfo] = useState(null);
+
+  // Backend API Status & Telemetry
+  const [backendStatus, setBackendStatus] = useState({ online: false, data: null, error: null });
+  const [isAnalyzerOpen, setIsAnalyzerOpen] = useState(false);
+
+  // Check Backend Health on demand
+  const handleCheckBackend = useCallback(async () => {
+    const status = await checkBackendHealth();
+    setBackendStatus(status);
+    if (status.online) {
+      const overview = await fetchFarmOverview();
+      if (overview) {
+        console.log("Synchronized farm overview from FastAPI backend:", overview);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchStatus = async () => {
+      const status = await checkBackendHealth();
+      if (isMounted) {
+        setBackendStatus(status);
+        if (status.online) {
+          fetchFarmOverview().then((overview) => {
+            if (overview) {
+              console.log("Synchronized farm overview from FastAPI backend:", overview);
+            }
+          });
+        }
+      }
+    };
+
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 30000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   // Fly Camera to 5-Acre Blight Hotspot
   const handleFocusBlight = useCallback(() => {
@@ -108,6 +150,9 @@ export default function App() {
         onResetView={handleResetView}
         mapboxToken={mapboxToken}
         setMapboxToken={setMapboxToken}
+        backendStatus={backendStatus}
+        onCheckBackend={handleCheckBackend}
+        onOpenAnalyzer={() => setIsAnalyzerOpen(true)}
       />
 
       {/* Main Workspace */}
@@ -122,6 +167,8 @@ export default function App() {
           setActiveBand={setActiveBand}
           onFocusBlight={handleFocusBlight}
           onFocusSector={handleFocusSector}
+          onOpenAnalyzer={() => setIsAnalyzerOpen(true)}
+          backendStatus={backendStatus}
         />
 
         {/* 3D Map Viewport (Deck.gl + Mapbox) */}
@@ -151,7 +198,6 @@ export default function App() {
           {/* Cartographic Legend */}
           <Legend
             showBlightZone={layerVisibility.blightZone}
-            showGrid={layerVisibility.pixelGrid}
             activeBand={activeBand}
           />
 
@@ -159,6 +205,14 @@ export default function App() {
           <Tooltip info={hoverInfo} />
         </div>
       </main>
+
+      {/* AI Disease Inference Modal (FastAPI route /predict_plant_health) */}
+      <DiseaseAnalyzerModal
+        isOpen={isAnalyzerOpen}
+        onClose={() => setIsAnalyzerOpen(false)}
+        backendStatus={backendStatus}
+        onFlyToSector={handleFocusSector}
+      />
     </div>
   );
 }

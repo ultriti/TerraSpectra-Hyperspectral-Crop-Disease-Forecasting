@@ -1,20 +1,17 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import DeckGL from "@deck.gl/react";
 import { TileLayer } from "@deck.gl/geo-layers";
 import {
   BitmapLayer,
   GeoJsonLayer,
-  PolygonLayer,
   ScatterplotLayer,
   TextLayer,
-  PathLayer,
   ColumnLayer
 } from "@deck.gl/layers";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 import {
-  FARM_CENTER,
   FARM_BOUNDARY_GEOJSON,
   FARM_SECTORS_GEOJSON,
   BLIGHT_PREDICTION_ZONE_GEOJSON,
@@ -30,7 +27,6 @@ export default function TerraMap({
   activeBasemap,
   activeBand,
   mapboxToken,
-  hoverInfo,
   setHoverInfo,
   is3D
 }) {
@@ -83,7 +79,7 @@ export default function TerraMap({
     } catch (err) {
       console.warn("Mapbox initialization error:", err);
     }
-  }, [mapboxToken]);
+  }, [mapboxToken, viewState.longitude, viewState.latitude, viewState.zoom, viewState.pitch, viewState.bearing]);
 
   // Keep Mapbox camera in sync with Deck.gl viewState
   useEffect(() => {
@@ -95,7 +91,7 @@ export default function TerraMap({
         bearing: viewState.bearing
       });
     }
-  }, [viewState]);
+  }, [viewState.longitude, viewState.latitude, viewState.zoom, viewState.pitch, viewState.bearing]);
 
   // Build Deck.gl Layers
   const layers = useMemo(() => {
@@ -170,7 +166,7 @@ export default function TerraMap({
     if (layerVisibility.pixelGrid) {
       layerList.push(
         new ColumnLayer({
-          id: "spectral-pixel-grid-layer",
+          id: `spectral-pixel-grid-${activeBand.id}`,
           data: pixelGridData,
           diskResolution: 4, // Render as square cells
           radius: 45,
@@ -183,7 +179,7 @@ export default function TerraMap({
               const alpha = 180 + Math.sin(pulsePhase) * 50;
               return [255, 25, 65, alpha];
             }
-            // Color ramp from healthy green to stressed yellow
+            // Modulate color ramp according to the selected hyperspectral band
             const stress = d.stressLevel;
             const r = Math.min(255, Math.floor(stress * 255 * 1.6));
             const g = Math.max(30, Math.floor((1 - stress * 0.7) * 220));
@@ -312,7 +308,7 @@ export default function TerraMap({
       <DeckGL
         initialViewState={viewState}
         viewState={viewState}
-        onViewStateChange={({ viewState }) => setViewState(viewState)}
+        onViewStateChange={({ viewState: nextViewState }) => setViewState(nextViewState)}
         controller={{
           dragRotate: true,
           dragPan: true,

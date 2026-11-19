@@ -1,7 +1,6 @@
-import React from "react";
-import { AlertTriangle, ShieldCheck, Activity } from "lucide-react";
+import { AlertTriangle, Activity } from "lucide-react";
 
-export default function Legend({ showBlightZone, showGrid, activeBand }) {
+export default function Legend({ showBlightZone, activeBand }) {
   return (
     <div className="gis-legend">
       <div className="legend-title">

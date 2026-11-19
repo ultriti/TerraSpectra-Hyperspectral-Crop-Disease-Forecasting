@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Layers,
   Activity,
@@ -8,13 +8,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Database,
-  Eye,
-  CheckCircle2,
-  Droplets,
-  Thermometer,
   ShieldAlert,
   Sprout,
-  Compass
+  Compass,
+  Cpu,
+  Sparkles,
+  Server
 } from "lucide-react";
 import { BASEMAP_STYLES, SPECTRAL_BANDS, SYSTEM_SPECS } from "../data/constants";
 import { SENSOR_STATIONS, BLIGHT_PREDICTION_ZONE_GEOJSON } from "../data/farmData";
@@ -27,7 +26,9 @@ export default function Sidebar({
   activeBand,
   setActiveBand,
   onFocusBlight,
-  onFocusSector
+  onFocusSector,
+  onOpenAnalyzer,
+  backendStatus
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("layers"); // 'layers' | 'diagnostics' | 'spectral' | 'sensors'
@@ -128,7 +129,7 @@ export default function Sidebar({
                   />
                   <div className="toggle-label-group">
                     <span className="toggle-name">1,000-Acre Farm Boundary</span>
-                    <span className="toggle-sub">Outer perimeter & cadastral border</span>
+                    <span className="toggle-sub">Outer perimeter &amp; cadastral border</span>
                   </div>
                 </label>
 
@@ -139,7 +140,7 @@ export default function Sidebar({
                     onChange={() => toggleLayer("sectors")}
                   />
                   <div className="toggle-label-group">
-                    <span className="toggle-name">Sectors & Parcels (A, B, C, D)</span>
+                    <span className="toggle-name">Sectors &amp; Parcels (A, B, C, D)</span>
                     <span className="toggle-sub">Romaine, Berries, Brassicas, Celery</span>
                   </div>
                 </label>
@@ -176,7 +177,7 @@ export default function Sidebar({
                   />
                   <div className="toggle-label-group">
                     <span className="toggle-name">3D Height Extrusions</span>
-                    <span className="toggle-sub">Canopy height & stress elevation profiles</span>
+                    <span className="toggle-sub">Canopy height &amp; stress elevation profiles</span>
                   </div>
                 </label>
 
@@ -187,7 +188,7 @@ export default function Sidebar({
                     onChange={() => toggleLayer("irrigation")}
                   />
                   <div className="toggle-label-group">
-                    <span className="toggle-name">Irrigation & Canal Network</span>
+                    <span className="toggle-name">Irrigation &amp; Canal Network</span>
                     <span className="toggle-sub">Main canals and sub-surface manifolds</span>
                   </div>
                 </label>
@@ -212,7 +213,7 @@ export default function Sidebar({
                   />
                   <div className="toggle-label-group">
                     <span className="toggle-name">Sector Labels (3D Text)</span>
-                    <span className="toggle-sub">Spatial names & acreage callouts</span>
+                    <span className="toggle-sub">Spatial names &amp; acreage callouts</span>
                   </div>
                 </label>
               </div>
@@ -242,6 +243,21 @@ export default function Sidebar({
           {/* TAB 2: DISEASE FORECASTING */}
           {activeTab === "diagnostics" && (
             <div className="tab-pane">
+              {/* Backend Model Integration Banner */}
+              <div className="backend-callout-card">
+                <div className="callout-header">
+                  <Cpu size={15} className="callout-icon" />
+                  <span>FastAPI Inference Route Active</span>
+                </div>
+                <p className="callout-desc">
+                  Direct connection to backend endpoint <code>/predict_plant_health</code>. Analyzes uploaded leaf imagery or hyperspectral spectral patches.
+                </p>
+                <button className="btn-callout-analyzer" onClick={onOpenAnalyzer}>
+                  <Sparkles size={14} />
+                  <span>Test Image with Backend Model</span>
+                </button>
+              </div>
+
               <div className="alert-card-hero">
                 <div className="alert-hero-top">
                   <ShieldAlert size={20} className="alert-hero-icon" />
@@ -349,6 +365,10 @@ export default function Sidebar({
                   <span className="t-lbl">BACKEND MODEL:</span>
                   <span className="t-val">{SYSTEM_SPECS.model}</span>
                 </div>
+                <div className="tech-item">
+                  <span className="t-lbl">MODEL CLASSES:</span>
+                  <span className="t-val">16 Disease &amp; Health Categories</span>
+                </div>
               </div>
             </div>
           )}
@@ -408,6 +428,12 @@ export default function Sidebar({
             <div className="footer-pipeline">
               <Database size={13} />
               <span>Pipeline: Rasterio + GDAL + PyTorch GPU</span>
+            </div>
+            <div className="footer-backend-sync">
+              <Server size={12} />
+              <span>
+                Backend API: {backendStatus?.online ? "Connected (1.2.0)" : "Standalone Mode"}
+              </span>
             </div>
             <div className="footer-version">TerraSpectra {SYSTEM_SPECS.version}</div>
           </div>

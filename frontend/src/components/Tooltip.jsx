@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function Tooltip({ info }) {
   if (!info || !info.object) return null;
 
