@@ -2,8 +2,6 @@
 import React, { useState } from 'react';
 import Map, { Source, Layer } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
-
-// We use the .env variable for security
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN; 
 
 const mockGeoJSON = {
