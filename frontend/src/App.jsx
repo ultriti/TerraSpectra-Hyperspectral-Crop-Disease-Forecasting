@@ -1,9 +1,9 @@
-import TerraMap from './TerraMap';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <div style={{ margin: 0, padding: 0 }}>
-      <TerraMap />
+    <div>
+      <Dashboard />
     </div>
   );
 }
