@@ -316,3 +316,16 @@ async def predict_plant_health(
 @app.on_event("startup")
 async def startup_event():
     load_saved_artifacts()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# TerraSpectra Hyperspectral Pipeline — v1 API Routes
+# Mounted at /api  (e.g. /api/health, /api/dashboard, /api/predict …)
+# These routes are additive; existing routes above are NOT modified.
+# ─────────────────────────────────────────────────────────────────────────────
+try:
+    from app.api.v1.router import api_router as _hsi_api_router
+    app.include_router(_hsi_api_router, prefix="/api")
+    print("[TerraSpectra] HSI Pipeline v1 router mounted at /api")
+except Exception as _hsi_err:
+    print(f"[TerraSpectra] HSI router not loaded: {_hsi_err}")
