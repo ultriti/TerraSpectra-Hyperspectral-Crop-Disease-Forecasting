@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import PredictionMap from '../components/Map/PredictionMap';
 import UploadPanel from '../components/Upload/UploadPanel';
-
+import SpectralChart from '../components/Analytics/SpectralChart';
+import ClassDistribution from '../components/Analytics/ClassDistribution';
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'map' | 'upload' | 'analytics'>('map');
 
@@ -53,8 +54,9 @@ export default function Dashboard() {
           {activeTab === 'map' && <PredictionMap />}
           {activeTab === 'upload' && <UploadPanel />}
           {activeTab === 'analytics' && (
-            <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
-              <h3>Analytics Coming Soon</h3>
+            <div style={{ padding: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', backgroundColor: '#f8fafc', height: '100%' }}>
+              <SpectralChart />
+              <ClassDistribution />
             </div>
           )}
         </div>
