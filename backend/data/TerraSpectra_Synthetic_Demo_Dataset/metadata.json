@@ -1,0 +1,30 @@
+{
+  "dataset_name": "TerraSpectra Synthetic HSI Demo",
+  "data_type": "synthetic hyperspectral-style reflectance cube",
+  "cube_shape": "32 rows x 32 columns x 16 bands",
+  "wavelengths_nm": [
+    450.0,
+    483.3333435058594,
+    516.6666870117188,
+    550.0,
+    583.3333129882812,
+    616.6666870117188,
+    650.0,
+    683.3333129882812,
+    716.6666870117188,
+    750.0,
+    783.3333129882812,
+    816.6666870117188,
+    850.0,
+    883.3333129882812,
+    916.6666870117188,
+    950.0
+  ],
+  "classes": {
+    "0": "healthy_demo",
+    "1": "stress_demo"
+  },
+  "purpose": "Pipeline/UI smoke test and beginner model experimentation only",
+  "warning": "Entire dataset is generated synthetically. It is NOT measured crop imagery, a real disease dataset, or evidence of disease detection accuracy.",
+  "spatial_reference": "No CRS or real-world geolocation; row/col are grid coordinates only."
+}
