@@ -1,6 +1,9 @@
 import numpy as np
 from pathlib import Path
+import csv
+
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 
 router = APIRouter(tags=["Hyperspectral Pipeline"])
 
@@ -161,3 +164,78 @@ def get_farm_analytics():
         "map_height": int(predictions.shape[0]),
         "map_width": int(predictions.shape[1])
     }
+
+
+
+# ---------------------------------------
+# PHASE 4 - MODEL EVALUATION API
+
+
+EVALUATION_DIR = Path(__file__).resolve().parents[4] / "evaluation"
+
+
+@router.get("/evaluation")
+def get_model_evaluation():
+    
+    print("EVALUATION_DIR",EVALUATION_DIR)
+
+    comparison_file = EVALUATION_DIR / "model_comparison.csv"
+    reliability_file = EVALUATION_DIR / "reliability_metrics.csv"
+
+    if not comparison_file.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Model comparison results not found."
+        )
+
+    # Read model comparison
+    models = []
+
+    with open(comparison_file, "r", newline="", encoding="utf-8-sig") as file:
+        reader = csv.DictReader(file)
+
+        for row in reader:
+            models.append({
+                "name": row["Model"],
+                "accuracy": float(row["Accuracy"]),
+                "precision": float(row["Precision"]),
+                "recall": float(row["Recall"]),
+                "f1_score": float(row["F1_Score"])
+            })
+
+    # Read reliability metrics if available
+    reliability = []
+
+    if reliability_file.exists():
+        with open(reliability_file, "r", newline="", encoding="utf-8-sig") as file:
+            reader = csv.DictReader(file)
+
+            for row in reader:
+                reliability.append(row)
+
+    return {
+        "status": "success",
+        "dataset": "Synthetic Hyperspectral Demo Dataset",
+        "test_samples": 72,
+        "models": models,
+        "reliability": reliability,
+        "confusion_matrix_url": "/api/evaluation/confusion-matrix"
+    }
+
+
+@router.get("/api/evaluation/confusion-matrix")
+def get_confusion_matrix():
+
+    image_path = EVALUATION_DIR / "confusion_matrices.png"
+
+    if not image_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="Confusion matrix image not found."
+        )
+
+    return FileResponse(
+        image_path,
+        media_type="image/png",
+        filename="confusion_matrices.png"
+    )
