@@ -1,20 +1,8 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 5173,
-    proxy: {
-      '/predict_plant_health': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true
-      },
-      '/api': {
-        target: 'http://127.0.0.1:8000',
-        changeOrigin: true
-      }
-    }
-  }
-})
+  plugins: [react(), tailwindcss()],
+});

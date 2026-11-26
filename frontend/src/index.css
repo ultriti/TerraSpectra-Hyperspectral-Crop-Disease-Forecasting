@@ -1,5 +1,8 @@
 /* Global Reset for Full-Screen GIS Application */
-html, body {
+@import "tailwindcss";
+
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -7,10 +10,29 @@ html, body {
   overflow: hidden;
   background-color: #0a0e17;
   color: #f0f6fc;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica,
+    Arial, sans-serif;
   user-select: none;
 }
 
+.sidebarFrame{
+  height: 100vh;
+  width: 30vw;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: #fff;
+
+}
+
+.mainFrame{
+  height: 100vh;
+  width: 70vw;
+  margin-left: 30vw;
+  
+}
+/* 
 #root {
   width: 100vw;
   height: 100vh;
@@ -22,6 +44,6 @@ html, body {
 }
 
 /* Ensure map canvases take full parent container */
-canvas {
+/* canvas {
   outline: none;
-}
+} */ 

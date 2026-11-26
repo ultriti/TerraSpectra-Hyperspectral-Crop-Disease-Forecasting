@@ -1,0 +1,147 @@
+
+.confidence-panel {
+  background: #080d1e;
+  border: 1px solid #26334d;
+  border-radius: 16px;
+  padding: 22px;
+  color: #e2e8f0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.confidence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.confidence-header h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.confidence-header p {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.confidence-badge {
+  background: #172554;
+  color: #93c5fd;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+
+.confidence-controls {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.confidence-controls button {
+  background: #111a2e;
+  border: 1px solid #26334d;
+  color: #94a3b8;
+  border-radius: 7px;
+  padding: 8px 13px;
+  cursor: pointer;
+}
+
+.confidence-controls button.active {
+  background: #164e63;
+  color: #a5f3fc;
+  border-color: #0891b2;
+}
+
+.confidence-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.confidence-stats div {
+  background: #111a2e;
+  border-radius: 9px;
+  padding: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.confidence-stats span {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.confidence-stats strong {
+  font-size: 19px;
+  color: #f8fafc;
+}
+
+.confidence-grid-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 15px;
+  background: #111827;
+  border: 1px solid #26334d;
+  border-radius: 10px;
+}
+
+.confidence-grid {
+  display: grid;
+  width: min(100%, 420px);
+  aspect-ratio: 1;
+  gap: 1px;
+}
+
+.confidence-pixel {
+  min-width: 0;
+  min-height: 0;
+}
+
+.confidence-gradient {
+  height: 12px;
+  border-radius: 6px;
+  margin-top: 18px;
+  background: linear-gradient(
+    to right,
+    #16a34a,
+    #a3e635,
+    #facc15,
+    #f97316,
+    #dc2626
+  );
+}
+
+.confidence-legend {
+  display: flex;
+  justify-content: space-between;
+  color: #94a3b8;
+  font-size: 11px;
+  margin-top: 8px;
+}
+
+.confidence-footer {
+  text-align: center;
+  color: #71829f;
+  font-size: 11px;
+  margin-top: 18px;
+}
+
+.confidence-error {
+  color: #fb7185;
+}
+
+@media (max-width: 600px) {
+  .confidence-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .confidence-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

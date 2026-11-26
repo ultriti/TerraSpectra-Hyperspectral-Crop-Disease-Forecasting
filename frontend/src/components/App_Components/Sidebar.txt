@@ -1,0 +1,696 @@
+import { useState } from "react";
+import {
+  Layers,
+  Activity,
+  AlertTriangle,
+  Radio,
+  Sliders,
+  ChevronLeft,
+  ChevronRight,
+  Database,
+  ShieldAlert,
+  Sprout,
+  Compass,
+  Cpu,
+  Sparkles,
+  Server,
+  CheckCircle2,
+} from "lucide-react";
+
+import {
+  BASEMAP_STYLES,
+  SPECTRAL_BANDS,
+  SYSTEM_SPECS,
+} from "../../data/constants";
+
+import {
+  SENSOR_STATIONS,
+  BLIGHT_PREDICTION_ZONE_GEOJSON,
+} from "../../data/farmData";
+
+const tabs = [
+  { id: "layers", label: "Layers", icon: Layers },
+  { id: "diagnostics", label: "Forecast", icon: AlertTriangle },
+  { id: "spectral", label: "Spectra", icon: Sliders },
+  { id: "sensors", label: "IoT", icon: Radio },
+];
+
+const layers = [
+  {
+    key: "farmBoundary",
+    name: "Farm Boundary",
+    description: "Outer perimeter and cadastral border",
+  },
+  {
+    key: "sectors",
+    name: "Sectors & Parcels",
+    description: "Agricultural sector boundaries",
+  },
+  {
+    key: "blightZone",
+    name: "Blight Hotspot",
+    description: "Predicted disease-risk zone",
+    critical: true,
+  },
+  {
+    key: "pixelGrid",
+    name: "Hyperspectral Grid",
+    description: "30m reflectance cells",
+  },
+  {
+    key: "elevation3D",
+    name: "3D Elevation",
+    description: "Canopy height and stress profiles",
+  },
+  {
+    key: "irrigation",
+    name: "Irrigation Network",
+    description: "Canals and water distribution",
+  },
+  {
+    key: "sensors",
+    name: "IoT Sensor Stations",
+    description: "Ground spectral calibration",
+  },
+  {
+    key: "labels",
+    name: "Sector Labels",
+    description: "Spatial names and acreage",
+  },
+];
+
+const sectors = [
+  { id: "A", acreage: 295, status: "Warning" },
+  { id: "B", acreage: 285, status: "Optimal" },
+  { id: "C", acreage: 240, status: "Optimal" },
+  { id: "D", acreage: 180, status: "Normal" },
+];
+
+const sectionTitle =
+  "mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400";
+
+const panel = "rounded-xl border border-slate-700/70 bg-slate-900/80 p-3";
+
+export default function Sidebar({
+  layerVisibility,
+  setLayerVisibility,
+  activeBasemap,
+  setActiveBasemap,
+  activeBand,
+  setActiveBand,
+  onFocusBlight,
+  onFocusSector,
+  onOpenAnalyzer,
+  backendStatus,
+}) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState("layers");
+
+  const blightData =
+    BLIGHT_PREDICTION_ZONE_GEOJSON?.features?.[0]?.properties ?? {};
+
+  const isOnline = Boolean(backendStatus?.online);
+
+  const toggleLayer = (key) => {
+    setLayerVisibility((previous) => ({
+      ...previous,
+      [key]: !previous?.[key],
+    }));
+  };
+
+  return (
+    <aside
+      className={`relative flex h-full shrink-0 flex-col overflow-hidden border-r border-slate-700 bg-slate-950 text-slate-100 shadow-2xl transition-all duration-300 ${
+        isCollapsed ? "w-14" : "w-80"
+      }`}
+    >
+      {/* Collapse button */}
+      <button
+        type="button"
+        onClick={() => setIsCollapsed((value) => !value)}
+        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className="absolute -right-3 top-5 z-30 flex h-7 w-7 items-center justify-center rounded-full border border-slate-600 bg-slate-900 text-cyan-400 shadow-lg transition hover:border-cyan-400 hover:bg-slate-800"
+      >
+        {isCollapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+      </button>
+
+      {/* Collapsed mode */}
+      {isCollapsed ? (
+        <nav className="flex flex-col items-center gap-3 py-5">
+          {tabs.map(({ id, icon: Icon }) => (
+            <button
+              key={id}
+              type="button"
+              title={id}
+              onClick={() => {
+                setActiveTab(id);
+                setIsCollapsed(false);
+              }}
+              className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
+                activeTab === id
+                  ? "bg-cyan-400/10 text-cyan-400"
+                  : "text-slate-400 hover:bg-slate-800 hover:text-white"
+              }`}
+            >
+              <Icon size={18} />
+            </button>
+          ))}
+        </nav>
+      ) : (
+        <>
+          {/* Header */}
+          <header className="border-b border-slate-800 px-4 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/30 bg-cyan-400/10">
+                <Compass size={20} className="text-cyan-400" />
+              </div>
+
+              <div>
+                <h2 className="text-sm font-bold tracking-wide text-white">
+                  TerraSpectra
+                </h2>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Geospatial Intelligence
+                </p>
+              </div>
+            </div>
+          </header>
+
+          {/* Navigation */}
+          <nav className="grid grid-cols-4 gap-1 border-b border-slate-800 bg-slate-900/60 p-2">
+            {tabs.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setActiveTab(id)}
+                className={`relative flex flex-col items-center gap-1.5 rounded-lg px-1 py-2.5 text-[11px] font-medium transition ${
+                  activeTab === id
+                    ? "bg-cyan-400/10 text-cyan-400"
+                    : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                }`}
+              >
+                <Icon size={17} />
+                <span>{label}</span>
+
+                {id === "diagnostics" && (
+                  <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white">
+                    1
+                  </span>
+                )}
+              </button>
+            ))}
+          </nav>
+
+          {/* Main content */}
+          <div className="min-h-0 flex-1 overflow-y-auto p-3">
+            {/* LAYERS */}
+            {activeTab === "layers" && (
+              <div className="space-y-6">
+                {/* Basemaps */}
+                <section>
+                  <h3 className={sectionTitle}>
+                    <Compass size={15} />
+                    Basemap
+                  </h3>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {BASEMAP_STYLES.map((style) => {
+                      const selected = activeBasemap?.id === style.id;
+
+                      return (
+                        <button
+                          key={style.id}
+                          type="button"
+                          onClick={() => setActiveBasemap(style)}
+                          className={`rounded-xl border p-3 text-left transition ${
+                            selected
+                              ? "border-cyan-400 bg-cyan-400/10 shadow-lg shadow-cyan-950/30"
+                              : "border-slate-700 bg-slate-900 hover:border-slate-500 hover:bg-slate-800"
+                          }`}
+                        >
+                          <p
+                            className={`text-xs font-semibold leading-relaxed ${
+                              selected ? "text-cyan-300" : "text-slate-200"
+                            }`}
+                          >
+                            {style.name}
+                          </p>
+
+                          <p className="mt-2 text-[10px] leading-relaxed text-slate-400">
+                            {style.description}
+                          </p>
+
+                          {selected && (
+                            <span className="mt-2 block text-[9px] font-semibold uppercase tracking-wider text-cyan-400">
+                              Selected
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                {/* Layer toggles */}
+                <section>
+                  <h3 className={sectionTitle}>
+                    <Layers size={15} />
+                    Geospatial Layers
+                  </h3>
+
+                  <div className="space-y-1">
+                    {layers.map((layer) => {
+                      const enabled = Boolean(layerVisibility?.[layer.key]);
+
+                      return (
+                        <label
+                          key={layer.key}
+                          className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-3 transition ${
+                            enabled
+                              ? "border-cyan-400/20 bg-cyan-400/5"
+                              : "border-transparent hover:bg-slate-900"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={enabled}
+                            onChange={() => toggleLayer(layer.key)}
+                            className="h-4 w-4 shrink-0 cursor-pointer accent-cyan-400"
+                          />
+
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className={`text-xs font-medium ${
+                                layer.critical
+                                  ? "text-rose-400"
+                                  : "text-slate-200"
+                              }`}
+                            >
+                              {layer.name}
+                            </p>
+
+                            <p className="mt-1 text-[10px] leading-relaxed text-slate-500">
+                              {layer.description}
+                            </p>
+                          </div>
+
+                          {layer.critical && (
+                            <AlertTriangle
+                              size={15}
+                              className="shrink-0 text-rose-400"
+                            />
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                {/* Sector navigator */}
+                <section>
+                  <h3 className={sectionTitle}>
+                    <Sprout size={15} />
+                    Sector Navigator
+                  </h3>
+
+                  <div className="space-y-2">
+                    {sectors.map((sector) => (
+                      <button
+                        key={sector.id}
+                        type="button"
+                        onClick={() => onFocusSector(sector.id)}
+                        className={`flex w-full items-center justify-between rounded-lg border px-3 py-3 text-xs transition ${
+                          sector.id === "A"
+                            ? "border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10"
+                            : "border-slate-800 bg-slate-900 hover:border-slate-600 hover:bg-slate-800"
+                        }`}
+                      >
+                        <span className="font-medium text-slate-200">
+                          Sector {sector.id}
+                          <span className="ml-2 text-slate-500">
+                            {sector.acreage} ac
+                          </span>
+                        </span>
+
+                        <span
+                          className={`text-[10px] font-semibold ${
+                            sector.id === "A"
+                              ? "text-amber-400"
+                              : "text-emerald-400"
+                          }`}
+                        >
+                          {sector.status}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* FORECAST */}
+            {activeTab === "diagnostics" && (
+              <div className="space-y-4">
+                <section className={panel}>
+                  <div className="flex items-center gap-2 text-cyan-400">
+                    <Cpu size={16} />
+                    <span className="text-xs font-semibold">AI Inference</span>
+                  </div>
+
+                  <p className="mt-3 text-xs leading-relaxed text-slate-400">
+                    Analyze leaf imagery or hyperspectral patches using your
+                    FastAPI plant-health endpoint.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={onOpenAnalyzer}
+                    className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-400/10 px-3 py-3 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-400/20"
+                  >
+                    <Sparkles size={15} />
+                    Open Image Analyzer
+                  </button>
+                </section>
+
+                <section className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3">
+                  <div className="flex items-start gap-3">
+                    <ShieldAlert size={21} className="shrink-0 text-rose-400" />
+
+                    <div>
+                      <h3 className="text-xs font-bold text-rose-400">
+                        Disease Risk Alert
+                      </h3>
+                      <p className="mt-1 text-[10px] text-slate-400">
+                        Sector A · Zone Alpha-9
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <Metric
+                      label="Affected Area"
+                      value={`${blightData?.acreage ?? "--"} ac`}
+                      color="text-rose-400"
+                    />
+
+                    <Metric
+                      label="Lead Time"
+                      value="21 Days"
+                      color="text-cyan-400"
+                    />
+
+                    <Metric
+                      label="AI Confidence"
+                      value={blightData?.confidenceScore ?? "--"}
+                    />
+
+                    <Metric
+                      label="Stage"
+                      value="Pre-Symptomatic"
+                      color="text-amber-400"
+                    />
+                  </div>
+
+                  <div className="mt-3 space-y-2 border-t border-slate-800 pt-3 text-xs">
+                    <p className="text-slate-400">
+                      Pathogen:{" "}
+                      <span className="text-slate-200">
+                        {blightData?.threat ?? "Unknown"}
+                      </span>
+                    </p>
+
+                    <p className="text-slate-400">
+                      Spectral anomaly:{" "}
+                      <span className="text-slate-200">
+                        {blightData?.detectedBandShift ?? "Unavailable"}
+                      </span>
+                    </p>
+                  </div>
+
+                  <div className="mt-3 rounded-lg bg-slate-950/70 p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-400">
+                      Recommended Action
+                    </p>
+
+                    <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                      {blightData?.recommendedAction ??
+                        "No recommendation available"}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={onFocusBlight}
+                    className="mt-3 w-full rounded-lg bg-rose-500/10 px-3 py-3 text-xs font-semibold text-rose-400 transition hover:bg-rose-500/20"
+                  >
+                    Focus Disease Hotspot
+                  </button>
+                </section>
+
+                <section className={panel}>
+                  <h3 className={sectionTitle}>
+                    <Activity size={15} />
+                    Detection Comparison
+                  </h3>
+
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-[10px] font-semibold text-slate-500">
+                        STANDARD RGB
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                        Detects visible symptoms after significant damage.
+                      </p>
+                    </div>
+
+                    <div className="border-t border-slate-800 pt-3">
+                      <p className="text-[10px] font-semibold text-emerald-400">
+                        TERRASPECTRA
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                        Uses spectral features for earlier stress detection.
+                      </p>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* SPECTRAL */}
+            {activeTab === "spectral" && (
+              <div className="space-y-4">
+                <section>
+                  <h3 className={sectionTitle}>
+                    <Sliders size={15} />
+                    Spectral Bands
+                  </h3>
+
+                  <p className="mb-3 text-xs leading-relaxed text-slate-400">
+                    Select a wavelength band to inspect its spectral
+                    characteristics.
+                  </p>
+
+                  <div className="space-y-2">
+                    {SPECTRAL_BANDS?.map((band) => {
+                      const selected = activeBand?.id === band?.id;
+
+                      return (
+                        <button
+                          key={band?.id}
+                          type="button"
+                          onClick={() => setActiveBand(band)}
+                          className={`w-full rounded-xl border p-3 text-left transition ${
+                            selected
+                              ? "border-cyan-400 bg-cyan-400/10"
+                              : "border-slate-800 bg-slate-900 hover:border-slate-600"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-200">
+                              {band?.label}
+                            </span>
+
+                            <span className="font-mono text-[10px] text-cyan-400">
+                              {band?.wavelength}
+                            </span>
+                          </div>
+
+                          <p className="mt-1 text-[10px] text-slate-500">
+                            {band?.sensor}
+                          </p>
+
+                          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                            {band?.description}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <section className={panel}>
+                  <h3 className={sectionTitle}>
+                    <Database size={15} />
+                    Model Configuration
+                  </h3>
+
+                  <div className="space-y-3 text-xs">
+                    <InfoRow
+                      label="Dimensionality"
+                      value="Incremental PCA · 220 → 32"
+                    />
+
+                    <InfoRow
+                      label="Backend Model"
+                      value={SYSTEM_SPECS?.model}
+                    />
+
+                    <InfoRow
+                      label="Model Classes"
+                      value="16 Disease & Health Categories"
+                    />
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* IOT */}
+            {activeTab === "sensors" && (
+              <div>
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className={sectionTitle}>
+                    <Radio size={15} />
+                    Sensor Telemetry
+                  </h3>
+
+                  <span className="text-[10px] text-slate-500">
+                    {SENSOR_STATIONS?.length ?? 0} Stations
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {SENSOR_STATIONS?.map((sensor) => {
+                    const alert = sensor?.status === "ALERT_ANOMALY";
+
+                    return (
+                      <section
+                        key={sensor?.id}
+                        className={`rounded-xl border p-3 ${
+                          alert
+                            ? "border-rose-500/30 bg-rose-500/5"
+                            : "border-slate-800 bg-slate-900"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex min-w-0 items-center gap-2">
+                            <Radio
+                              size={14}
+                              className={
+                                alert ? "text-rose-400" : "text-emerald-400"
+                              }
+                            />
+
+                            <span className="truncate text-xs font-semibold text-slate-200">
+                              {sensor?.name}
+                            </span>
+                          </div>
+
+                          <span
+                            className={`text-[9px] font-bold ${
+                              alert ? "text-rose-400" : "text-emerald-400"
+                            }`}
+                          >
+                            {alert ? "ALERT" : "STABLE"}
+                          </span>
+                        </div>
+
+                        <div className="mt-3 grid grid-cols-2 gap-3">
+                          <SensorValue
+                            label="Red Edge · 705nm"
+                            value={sensor?.spectralReflectanceB705}
+                          />
+
+                          <SensorValue
+                            label="Soil Moisture"
+                            value={sensor?.soilMoisture}
+                          />
+
+                          <SensorValue
+                            label="Air Temperature"
+                            value={`${sensor?.airTempC ?? "--"}°C`}
+                          />
+
+                          <SensorValue
+                            label="Humidity"
+                            value={sensor?.humidity}
+                          />
+                        </div>
+                      </section>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <footer className="border-t border-slate-800 bg-slate-900/60 px-3 py-3">
+            <div className="flex items-center gap-2 text-[10px] text-slate-400">
+              <Database size={13} className="text-cyan-400" />
+              <span>Rasterio · GDAL · PyTorch</span>
+            </div>
+
+            <div className="mt-2 flex items-center gap-2 text-[10px]">
+              {isOnline ? (
+                <CheckCircle2 size={13} className="text-emerald-400" />
+              ) : (
+                <Server size={13} className="text-amber-400" />
+              )}
+
+              <span className="text-slate-400">
+                API: {isOnline ? "Connected" : "Standalone"}
+              </span>
+
+              <span className="ml-auto font-mono text-slate-500">
+                {SYSTEM_SPECS?.version}
+              </span>
+            </div>
+          </footer>
+        </>
+      )}
+    </aside>
+  );
+}
+
+function Metric({ label, value, color = "text-slate-100" }) {
+  return (
+    <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-2.5">
+      <p className="text-[9px] uppercase tracking-wider text-slate-500">
+        {label}
+      </p>
+
+      <p className={`mt-1 text-xs font-bold ${color}`}>{value}</p>
+    </div>
+  );
+}
+
+function SensorValue({ label, value }) {
+  return (
+    <div className="rounded-md bg-slate-950/50 p-2">
+      <p className="text-[9px] text-slate-500">{label}</p>
+
+      <p className="mt-1 font-mono text-xs font-medium text-slate-200">
+        {value ?? "--"}
+      </p>
+    </div>
+  );
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div>
+      <p className="text-[10px] text-slate-500">{label}</p>
+      <p className="mt-1 break-words text-slate-200">{value ?? "--"}</p>
+    </div>
+  );
+}

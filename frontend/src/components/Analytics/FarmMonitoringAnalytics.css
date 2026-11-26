@@ -1,0 +1,151 @@
+
+.farm-analytics {
+  width: 100%;
+  margin: 24px 0;
+  color: #e5e7eb;
+}
+
+.analytics-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.analytics-heading h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.analytics-heading p,
+.analytics-card p {
+  color: #94a3b8;
+  margin: 0;
+  font-size: 13px;
+}
+
+.analytics-status {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.analytics-card,
+.analytics-summary {
+  background: #111827;
+  border: 1px solid #273449;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.analytics-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.analytics-dot,
+.healthy-dot,
+.stress-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.analytics-value {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 18px 0 8px;
+}
+
+.analytics-value small {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-left: 5px;
+}
+
+.analytics-summary {
+  margin-top: 20px;
+}
+
+.analytics-summary h3 {
+  margin-top: 0;
+}
+
+.summary-bar {
+  display: flex;
+  width: 100%;
+  height: 14px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #334155;
+  margin: 20px 0 12px;
+}
+
+.healthy-bar {
+  background: #22c55e;
+}
+
+.stress-bar {
+  background: #ef4444;
+}
+
+.summary-legend {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.healthy-dot {
+  background: #22c55e;
+  margin-right: 6px;
+}
+
+.stress-dot {
+  background: #ef4444;
+  margin-right: 6px;
+}
+
+.summary-details {
+  border-top: 1px solid #273449;
+  margin-top: 18px;
+  padding-top: 12px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.analytics-error {
+  color: #f87171;
+}
+
+@media (max-width: 900px) {
+  .analytics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
