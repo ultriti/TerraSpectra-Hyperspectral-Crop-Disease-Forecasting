@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import Dashboard from './pages/Dashboard';
-
-function App() {
-  return (
-    <div>
-      <Dashboard />
-    </div>
-  );
-}
-
-export default App;
-=======
 import { useState, useCallback, useEffect } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
@@ -229,4 +216,3 @@ export default function App() {
     </div>
   );
 }
->>>>>>> origin/main
