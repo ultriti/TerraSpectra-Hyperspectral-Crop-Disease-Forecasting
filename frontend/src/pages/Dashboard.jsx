@@ -53,10 +53,10 @@ function Dashboard() {
     name: farm.properties.name,
     cropType: farm.properties.crop,
     area: farm.properties.area,
-    latitude: 13.282,
-    longitude: 77.5225,
-    status: "Monitoring Active",
-    lastUpdated: "26 Nov 2026",
+    latitude: 13.2940,
+    longitude: 77.5230,
+    status: "Active – Hyperspectral Monitoring",
+    lastUpdated: "28 Nov 2026",
   };
 
   return (
@@ -87,7 +87,7 @@ function Dashboard() {
         subtitle="Satellite-based geographical farm visualization"
       >
         <div className="h-[60vh] min-h-[360px] w-full">
-          {/* <FarmMap /> */}
+          <FarmMap />
         </div>
       </Card>
 
